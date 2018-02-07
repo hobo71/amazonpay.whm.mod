@@ -34,7 +34,6 @@ if (is_numeric($varPresent)) {
 	  if ($gatewayVariables['sandbox'] === 'on') {
 		
 		$amazonClient->setSandbox(true);
-		
 		switch ($getGatewayVariables['region']) {
 			case 'us':
 				$endpointurl = "<script type='text/javascript' src='https://static-na.payments-amazon.com/OffAmazonPayments/us/sandbox/js/Widgets.js'></script>";
@@ -76,7 +75,7 @@ if (is_numeric($varPresent)) {
 			 break;
 			 
 			default:
-				$endpointurl = "<script type='text/javascript' src='https://static-na.payments-amazon.com/OffAmazonPayments/us/sandbox/js/Widgets.js'></script>";
+				$endpointurl = "<script type='text/javascript' src='https://static-na.payments-amazon.com/OffAmazonPayments/us/js/Widgets.js'></script>";
 		     break;
 		}		  
 	  }		  
@@ -128,6 +127,7 @@ $code .= '<script type="text/javascript">
             designMode: \'responsive\'
         },
         onError: function (error) {
+            console.log(error.getErrorCode(),error.getErrorMessage());
             // your error handling code
         }
     }).bind("addressBookWidgetDiv");
@@ -140,6 +140,7 @@ $code .= '<script type="text/javascript">
             designMode: \'responsive\'
         },
         onError: function (error) {
+            console.log(error.getErrorCode(),error.getErrorMessage());
             // your error handling code
         }
     }).bind("walletWidgetDiv");
