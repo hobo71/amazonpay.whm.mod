@@ -1,10 +1,10 @@
 # AmazonPay Module for WHMCS
 
 ## File structure
-[whmcs-root]/modules/gateways/
- |- AmazonPay
- |- amazonpay.php
- |- callback/amazonpay.php
+[whmcs-root]/modules/gateways/  
+                             |- AmazonPay  
+                             |- amazonpay.php  
+                             |- callback/amazonpay.php
  
 ## Setup
 
