@@ -10,4 +10,4 @@
 
 - Enable Gateway `AmazonPay` Under WHMCS
 - Fill in the parameters
-- Set `Allowed Return URL` in Amazon's merchant interface as <whmcs-url>/modules/gateways/callback/amazonpay.php
+- Set `Allowed Return URL` in Amazon's merchant interface as `[whmcs-root]/modules/gateways/callback/amazonpay.php`
