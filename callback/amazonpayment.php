@@ -10,7 +10,7 @@ if (file_exists("../../../dbconnect.php")){
 include("../../../includes/functions.php");
 include("../../../includes/gatewayfunctions.php");
 include("../../../includes/invoicefunctions.php");
-require_once('../PayWithAmazon/Client.php');
+require_once('../AmazonPay/Client.php');
 
 $gatewaymodule = "amazonpayment"; # Enter your gateway module name here replacing template
 
@@ -29,7 +29,7 @@ if (is_numeric($varPresent)) {
 					  'client_id' => $gatewayVariables['clientid'],
 					  'region' => $gatewayVariables['region']);
 					  
-	$amazonClient = new PayWithAmazon\Client($amazonConfig);
+	$amazonClient = new AmazonPay\Client($amazonConfig);
 
 	  if ($gatewayVariables['sandbox'] === 'on') {
 		

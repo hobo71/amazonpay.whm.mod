@@ -1,5 +1,5 @@
 <?php
-require_once("PayWithAmazon/Client.php");
+require_once("AmazonPay/Client.php");
 
 try {
 	  $gatewayVariables = getGatewayVariables('amazonpayment');
@@ -16,7 +16,7 @@ if (is_numeric($varPresent)) {
 					  'client_id' => $gatewayVariables['clientid'],
 					  'region' => $gatewayVariables['region']);
 					  
-	$amazonClient = new PayWithAmazon\Client($amazonConfig);
+	$amazonClient = new AmazonPay\Client($amazonConfig);
 	
     if ($gatewayVariables['sandbox'] == 'on') {
 		$amazonClient->setSandbox(true);

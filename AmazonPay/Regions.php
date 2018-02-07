@@ -1,5 +1,5 @@
 <?php
-namespace PayWithAmazon;
+namespace AmazonPay;
 
 /* Class Regions
  * Defines all Region specific properties
