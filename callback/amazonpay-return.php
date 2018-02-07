@@ -12,7 +12,7 @@ include("../../../includes/gatewayfunctions.php");
 include("../../../includes/invoicefunctions.php");
 require_once('../AmazonPay/Client.php');
 
-$gatewaymodule = "amazonpayment"; # Enter your gateway module name here replacing template
+$gatewaymodule = "amazonpay"; # Enter your gateway module name here replacing template
 
 try {
   $gatewayVariables = getGatewayVariables($gatewaymodule);

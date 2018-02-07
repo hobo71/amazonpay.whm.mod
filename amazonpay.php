@@ -2,7 +2,7 @@
 require_once("AmazonPay/Client.php");
 
 try {
-  $gatewayVariables = getGatewayVariables('amazonpayment');
+  $gatewayVariables = getGatewayVariables('amazonpay');
   $varPresent       = 1;
 }
 catch (\Exception $e) {}
@@ -24,12 +24,12 @@ if (is_numeric($varPresent)) {
   }
 }
 
-function amazonpayment_config()
+function amazonpay_config()
 {
   $configarray = array(
     "FriendlyName" => array(
       "Type" => "System",
-      "Value" => "Amazon Payment"
+      "Value" => "AmazonPay"
     ),
     "merchantid" => array(
       "FriendlyName" => "Merchant ID",
@@ -70,7 +70,7 @@ function amazonpayment_config()
   return $configarray;
 }
 
-function amazonpayment_link($params)
+function amazonpay_link($params)
 {
   
   # Gateway Specific Variables
@@ -107,7 +107,7 @@ function amazonpayment_link($params)
   $returnToInvoiceUrl = $params['systemurl'] . '/viewinvoice.php?id=' . $invoiceid;
   $transdetails       = urlencode(base64_encode($invoiceid . '::' . $amount . '::' . $description . '::' . $companyname . '::' . $returnToInvoiceUrl));
   
-  $getGatewayVariables = getGatewayVariables('amazonpayment');
+  $getGatewayVariables = getGatewayVariables('amazonpay');
   
   if (!$getGatewayVariables["type"])
     die("Module Not Activated");
