@@ -51,11 +51,6 @@ function amazonpay_config()
       "Type" => "text",
       "Size" => "20"
     ),
-    "allowedreturnurl" => array(
-      "FriendlyName" => "Allowed Return URL",
-      "Type" => "text",
-      "Size" => "20"
-    ),
     "region" => array(
       "FriendlyName" => "Region",
       "Type" => "dropdown",
@@ -78,7 +73,7 @@ function amazonpay_link($params)
   $gatewayaccesskey        = $params['accesskey'];
   $gatewaysecretkey        = $params['secretkey'];
   $gatewayclientid         = $params['clientid'];
-  $gatewayallowedreturnurl = $params['allowedreturnurl'];
+  $gatewayallowedreturnurl = rtrim($params['systemurl'], '/') . '/modules/gateways/callback/amazonpay.php';
   $gatewaytestmode         = $params['testmode'];
   $gatewayendpointurl      = $params['endpointurl'];
   
@@ -102,9 +97,8 @@ function amazonpay_link($params)
   
   # System Variables
   $companyname        = $params['companyname'];
-  $systemurl          = $params['systemurl'];
   $currency           = $params['currency'];
-  $returnToInvoiceUrl = $params['systemurl'] . '/viewinvoice.php?id=' . $invoiceid;
+  $returnToInvoiceUrl = rtrim($params['systemurl'], '/') . '/viewinvoice.php?id=' . $invoiceid;
   $transdetails       = urlencode(base64_encode($invoiceid . '::' . $amount . '::' . $description . '::' . $companyname . '::' . $returnToInvoiceUrl));
   
   $getGatewayVariables = getGatewayVariables('amazonpay');
