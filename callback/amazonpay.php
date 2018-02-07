@@ -21,7 +21,7 @@ try {
 catch (\Exception $e) {}
 
 if (is_numeric($varPresent)) {
-  
+  $invoiceDetails = explode('::', urldecode(base64_decode($_REQUEST['trd'])));
   $amazonConfig = array(
     'merchant_id' => $gatewayVariables['merchantid'],
     'access_key' => $gatewayVariables['accesskey'],
@@ -33,7 +33,6 @@ if (is_numeric($varPresent)) {
   $amazonClient = new AmazonPay\Client($amazonConfig);
   
   if ($gatewayVariables['sandbox'] === 'on') {
-    
     $amazonClient->setSandbox(true);
     switch ($getGatewayVariables['region']) {
       case 'us':
@@ -79,49 +78,57 @@ if (is_numeric($varPresent)) {
         break;
     }
   }
-  
+	
   $code = '<html><header>
 <style type="text/css">
- #LayerOver {
-    opacity:100;
-    filter: alpha(opacity=50);
-    background-color:#fff; 
-    width:100%; 
-    height:50%; 
-    z-index:10;
-    top:200; 
-    left:0; 
-    position:fixed; 
-  }
-  #addressBookWidgetDiv {display: none;
-  }
-  
-  #walletWidgetDiv {display: none;
-  }
-  
+#btn-place-order{display:inline-block;width:159px;background:none repeat scroll 0 0 #d8dde6;border:1px solid;border-color:#b7b7b7 #aaa #a0a0a0;border-image:none;height:35px;overflow:hidden;text-align:center;text-decoration:none!important;vertical-align:middle;color:#05a;cursor:pointer}
+#btn-place-order{border-color:#be952c #a68226 #9b7924;background-color:#eeba37}
+#btn-place-order{background:#f6d073;background:-moz-linear-gradient(top,#fee6b0,#eeba37);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fee6b0),color-stop(100%,#eeba37));background:-webkit-linear-gradient(top,#fee6b0,#eeba37);background:-o-linear-gradient(top,#fee6b0,#eeba37);background:-ms-linear-gradient(top,#fee6b0,#eeba37);background:linear-gradient(top,#fee6b0,#eeba37);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#fee6b0",endColorstr="#eeba37",GradientType=0);zoom:1;}
+#btn-place-order:hover{background:#f5c85b;background:-moz-linear-gradient(top,#fede97,#ecb21f);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fede97),color-stop(100%,#ecb21f));background:-webkit-linear-gradient(top,#fede97,#ecb21f);background:-o-linear-gradient(top,#fede97,#ecb21f);background:-ms-linear-gradient(top,#fede97,#ecb21f);background:linear-gradient(top,#fede97,#ecb21f);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#fede97",endColorstr="#ecb21f",GradientType=0);zoom:1}
+#btn-place-order:active{-webkit-box-shadow:0 1px 3px rgba(0,0,0,0.2) inset;-moz-box-shadow:0 1px 3px rgba(0,0,0,0.2) inset;box-shadow:0 1px 3px rgba(0,0,0,0.2) inset;background-color:#eeba37;background-image:none;filter:none}
+#btn-place-order{line-height:33px;background-color:transparent;color:#111;display:block;font-family:Arial,sans-serif;font-size:15px;outline:0 none;text-align:center;white-space:nowrap;cursor:pointer;}
+#btn-place-order:link {text-decoration: none;}
 </style></header><body>';
   
-  $code .= '<div id="addressBookWidgetDiv" style="width:400px; height:240px;"></div>
-<div id="walletWidgetDiv" style="width:400px; height:240px;"></div><div id="LayerOver" align="center"><img src="http://media.giphy.com/media/LN31zBaVbUzDO/giphy.gif"></div>';
+  $code .= '<!-- <div id="addressBookWidgetDiv" style="width:400px; height:240px;"></div> --!>
+<div align="center" style="margin:5%;">
+		<img src="https://images-na.ssl-images-amazon.com/images/G/01/amazonservices/payments/website/Secondary-logo-amazonpay-fullcolor_tools._V534864886_.png">
+		<br/>
+		<p><span id="helloMessage"></span><br/><br/>Pay <b>$' . $invoiceDetails[1] . ' USD</b> to ' . $invoiceDetails[3] . '</p>
+		<div id="walletWidgetDiv" align="center" style="width:400px; height:240px;"></div>
+		<br>
+		<a id="btn-place-order" style="display: none;">Place your order</a>
+</div>';
   
   $code .= '<script type=\'text/javascript\'>
     window.onAmazonLoginReady = function () {
         amazon.Login.setClientId(\'' . $gatewayVariables['clientid'] . '\');
+				amazon.Login.retrieveProfile(function (response) {
+						// Display profile information.
+						document.getElementById("helloMessage").innerHTML = "Hello, " + response.profile.Name + ".";
+				});
     };
 </script>';
   
   $code .= $endpointurl;
   
   $code .= '<script type="text/javascript">
+		var orderReferenceId;
+	  var enableOrderButton = function(orderReferenceId) {
+		    var placeOrderBtn = document.getElementById("btn-place-order");
+				placeOrderBtn.style.display = "block";
+				placeOrderBtn.href = window.location.href + "&AmazonOrderReferenceId=" + orderReferenceId;
+		};
+	/* No need
     new OffAmazonPayments.Widgets.AddressBook({
         sellerId: \'' . $gatewayVariables['merchantid'] . '\',
         onOrderReferenceCreate: function (orderReference) {
            orderReferenceId = orderReference.getAmazonOrderReferenceId();
-		   window.location = window.location.href + "&AmazonOrderReferenceId=" + orderReferenceId;
+					 enableOrderButton(orderReferenceId);
+		       //window.location = window.location.href + "&AmazonOrderReferenceId=" + orderReferenceId;
         },
         onAddressSelect: function () {
             // do stuff here like recalculate tax and/or shipping
-			
         },
         design: {
             designMode: \'responsive\'
@@ -131,10 +138,16 @@ if (is_numeric($varPresent)) {
             // your error handling code
         }
     }).bind("addressBookWidgetDiv");
-
+  */
     new OffAmazonPayments.Widgets.Wallet({
         sellerId: \'' . $gatewayVariables['merchantid'] . '\',
-        onPaymentSelect: function () {
+				onOrderReferenceCreate: function (orderReference) {
+           orderReferenceId = orderReference.getAmazonOrderReferenceId();
+					 enableOrderButton(orderReferenceId);
+        },
+        onPaymentSelect: function (orderReference) {
+           orderReferenceId = orderReference.getAmazonOrderReferenceId ? orderReference.getAmazonOrderReferenceId() : orderReferenceId;
+					 enableOrderButton(orderReferenceId);
         },
         design: {
             designMode: \'responsive\'
@@ -156,7 +169,6 @@ if (is_numeric($varPresent)) {
   
   $requestParameters       = array();
   $gAmazonOrderReferenceId = $_REQUEST['AmazonOrderReferenceId'];
-  $invoiceDetails          = explode('::', urldecode(base64_decode($_REQUEST['trd'])));
   
   // Create the parameters array to set the order
   $requestParameters['amazon_order_reference_id'] = $gAmazonOrderReferenceId;
@@ -190,25 +202,25 @@ if (is_numeric($varPresent)) {
     $requestParameters['authorization_amount']       = $invoiceDetails[1];
     $requestParameters['authorization_reference_id'] = md5($gAmazonOrderReferenceId);
     $requestParameters['seller_authorization_note']  = 'Authorizing payment';
-    //$requestParameters['capture_now'] = "true";
+    $requestParameters['capture_now'] = TRUE;
     $requestParameters['transaction_timeout']        = 0;
 		
     $response                   = $amazonClient->authorize($requestParameters);
     $responsearray['authorize'] = json_decode($response->toJson());
   }
   
-  // If the Authorize API call was a success, make the Capture API call when you are ready to capture for the order (for example when the order has been dispatched)
-  if ($amazonClient->success) {
-    $authorizationResponse                        = json_decode($response->toJson(), true);
-    $requestParameters['amazon_authorization_id'] = $authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId'];
-    $requestParameters['capture_amount']          = $invoiceDetails[1];
-    $requestParameters['currency_code']        = 'USD';
-    $requestParameters['capture_reference_id'] = md5($authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId']);
+//   // If the Authorize API call was a success, make the Capture API call when you are ready to capture for the order (for example when the order has been dispatched)
+//   if ($amazonClient->success) {
+//     $authorizationResponse                        = json_decode($response->toJson(), true);
+//     $requestParameters['amazon_authorization_id'] = $authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId'];
+//     $requestParameters['capture_amount']          = $invoiceDetails[1];
+//     $requestParameters['currency_code']        = 'USD';
+//     $requestParameters['capture_reference_id'] = md5($authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId']);
     
-    $response                 = $amazonClient->capture($requestParameters);
-    $responsearray['capture'] = json_decode($response->toJson());
+//     $response                 = $amazonClient->capture($requestParameters);
+//     $responsearray['capture'] = json_decode($response->toJson());
     
-  }
+//   }
   
   // Echo the Json encoded array for the Ajax success 
   $GATEWAY = getGatewayVariables($gatewaymodule);
@@ -220,18 +232,16 @@ if (is_numeric($varPresent)) {
   
   $responseCapture = json_decode($response->toJson(), true);
   
-  $status = $responseCapture['CaptureResult']['CaptureDetails']['CaptureStatus']['State'];
-  
   $invoiceid = $invoiceDetails[0];
   $transid   = $gAmazonOrderReferenceId;
-  $amount    = $responseCapture['CaptureResult']['CaptureDetails']['CaptureAmount']['Amount'];
-  $fee       = $responseCapture['CaptureResult']['CaptureDetails']['CaptureFee']['Amount'];
+  $amount    = $responseCapture['AuthorizeResult']['AuthorizationDetails']['CapturedAmount']['Amount'];
+  $fee       = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationFee']['Amount'];
   
   $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
   
   checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
   
-  if ($status == "Completed") {
+  if ($responseCapture["ResponseStatus"] == 200) {
     # Successful
     addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
     logTransaction($GATEWAY["name"], $responseCapture, "Successful"); # Save to Gateway Log: name, data array, status
@@ -239,6 +249,8 @@ if (is_numeric($varPresent)) {
   } else {
     # Unsuccessful
     logTransaction($GATEWAY["name"], $responseCapture, "Unsuccessful"); # Save to Gateway Log: name, data array, status
+    echo "<p>There was an error processing your payment. Please try another payment method, or contact support.<br/>Sincerely, IPBurger.</p>";
+    echo "<script type='text/javascript'>setTimeout(function() {window.location = '" . $invoiceDetails[4] . ";'}, 5000);</script>";
   }
 }
 session_destroy();

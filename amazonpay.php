@@ -29,7 +29,7 @@ function amazonpay_config()
   $configarray = array(
     "FriendlyName" => array(
       "Type" => "System",
-      "Value" => "AmazonPay"
+      "Value" => "Amazon Pay"
     ),
     "merchantid" => array(
       "FriendlyName" => "Merchant ID",
@@ -153,50 +153,11 @@ function amazonpay_link($params)
     }
   }
   
-  //return $code;
-  $code1 = '<a href="#" id="LoginWithAmazon">
-  <img border="0" alt="Login with Amazon"
-    src="https://images-na.ssl-images-amazon.com/images/G/01/lwa/btnLWA_gold_156x32.png"
-    width="156" height="32" />
-  </a>';
-  
-  $code1 .= '<div id="amazon-root"></div>
-<script type="text/javascript">
-
-  window.onAmazonLoginReady = function() {
-    amazon.Login.setClientId(\'' . $gatewayclientid . '\');
-  };
-  (function(d) {
-    var a = d.createElement(\'script\'); a.type = \'text/javascript\';
-    a.async = true; a.id = \'amazon-login-sdk\';
-    a.src = \'https://api-cdn.amazon.com/sdk/login1.js\';
-    d.getElementById(\'amazon-root\').appendChild(a);
-  })(document);
-
-</script>';
-  
-  $code1 .= '<script type=\'text/javascript\'>
-    window.onAmazonLoginReady = function () {
-        amazon.Login.setClientId(\'' . $gatewayclientid . '\');
-    };
-</script>';
-  
-  //$code1 .= $sandboxurl;
-  
-  $code1 .= '<script type="text/javascript">
-
-  document.getElementById(\'LoginWithAmazon\').onclick = function() {
-    options = { scope : \'profile\' };
-    amazon.Login.authorize(options, \'' . $gatewayallowedreturnurl . '\');
-    return false;
-  };
-
-</script>';
-  
   $code = '<div id="AmazonLoginButton"></div>';
   $code .= '<script type=\'text/javascript\'>
     window.onAmazonLoginReady = function () {
         amazon.Login.setClientId(\'' . $gatewayclientid . '\');
+        amazon.Login.logout(); //we log out so every time user gets to choose explicitly which amazon account to use
     };
 </script>';
   
@@ -205,7 +166,8 @@ function amazonpay_link($params)
     var authRequest;
     OffAmazonPayments.Button("AmazonLoginButton", "' . $gatewaymerchantid . '", {
         type: "PwA",
-        color: "Gold",
+        color: "DarkGray",
+        popup: false,
         authorization: function () {
             loginOptions = { scope: "profile postal_code payments:widget payments:shipping_address", popup: true };
             authRequest = amazon.Login.authorize(loginOptions, "' . $gatewayallowedreturnurl . '?trd=' . $transdetails . '");
