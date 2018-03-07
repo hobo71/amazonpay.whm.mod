@@ -224,12 +224,13 @@ if (is_numeric($varPresent)) {
   $amount    = $responseCapture['AuthorizeResult']['AuthorizationDetails']['CapturedAmount']['Amount'];
   $fee       = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationFee']['Amount'];
   $auth_status = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State'];
+  $auth_reason = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['ReasonCode'];
   
   $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
   
   checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
   
-  if ($responseCapture["ResponseStatus"] == 200 && $amount == $invoiceDetails[1] && $auth_status === "Closed") {
+  if ($responseCapture["ResponseStatus"] == 200 && $amount == $invoiceDetails[1] && $auth_status == "Closed" && $auth_reason == "MaxCapturesProcessed") {
     # Successful
     addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
     logTransaction($GATEWAY["name"], $responseCapture, "Success"); # Save to Gateway Log: name, data array, status
