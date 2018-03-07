@@ -202,8 +202,8 @@ if (is_numeric($varPresent)) {
     $requestParameters['authorization_amount']       = $invoiceDetails[1];
     $requestParameters['authorization_reference_id'] = md5($gAmazonOrderReferenceId);
     $requestParameters['seller_authorization_note']  = 'Authorizing payment';
-    $requestParameters['capture_now'] = TRUE;
-    $requestParameters['transaction_timeout']        = 0;
+    $requestParameters['capture_now']                = TRUE;
+    $requestParameters['transaction_timeout']        = 1440; # 24 hours
 		
     $response                   = $amazonClient->authorize($requestParameters);
     $responsearray['authorize'] = json_decode($response->toJson());
@@ -221,20 +221,18 @@ if (is_numeric($varPresent)) {
   
   $invoiceid = $invoiceDetails[0];
   $transid   = $gAmazonOrderReferenceId;
-  $amount    = $responseCapture['AuthorizeResult']['AuthorizationDetails']['CapturedAmount']['Amount'];
-  $fee       = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationFee']['Amount'];
   $auth_status = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State'];
-  $auth_reason = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['ReasonCode'];
   
   $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
   
   checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
   
-  if ($responseCapture["ResponseStatus"] == 200 && $amount == $invoiceDetails[1] && $auth_status == "Closed" && $auth_reason == "MaxCapturesProcessed") {
+  if ($responseCapture["ResponseStatus"] == 200 && $auth_status == "Pending") {
     # Successful
-    addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
-    logTransaction($GATEWAY["name"], $responseCapture, "Success"); # Save to Gateway Log: name, data array, status
-    echo "<script type='text/javascript'>window.location = '" . $invoiceDetails[4] . "';</script>";
+    # addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
+    logTransaction($GATEWAY["name"], $responseCapture, "Pending"); # Save to Gateway Log: name, data array, status
+		echo "<p>Thank you! The transaction process has been initiated, please give us upto 24 hours. Once done, we will notify you.<br/>Sincerely, IPBurger.</p>";
+    echo "<p><a href='" + $invoiceDetails[4] + "'>Click here to go back to your invoice.</a></p>";
   } else {
     # Unsuccessful
     logTransaction($GATEWAY["name"], $responseCapture, "Failed"); # Save to Gateway Log: name, data array, status
