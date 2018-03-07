@@ -232,7 +232,7 @@ if (is_numeric($varPresent)) {
     # addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
     logTransaction($GATEWAY["name"], $responseCapture, "Pending"); # Save to Gateway Log: name, data array, status
 		echo "<p>Thank you! The transaction process has been initiated, please give us upto 24 hours. Once done, we will notify you.<br/>Sincerely, IPBurger.</p>";
-    echo "<p><a href='" + $invoiceDetails[4] + "'>Click here to go back to your invoice.</a></p>";
+    echo "<p><a href='" . $invoiceDetails[4] . "'>Click here to go back to your invoice.</a></p>";
   } else {
     # Unsuccessful
     logTransaction($GATEWAY["name"], $responseCapture, "Failed"); # Save to Gateway Log: name, data array, status
