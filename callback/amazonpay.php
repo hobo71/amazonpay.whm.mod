@@ -209,19 +209,6 @@ if (is_numeric($varPresent)) {
     $responsearray['authorize'] = json_decode($response->toJson());
   }
   
-//   // If the Authorize API call was a success, make the Capture API call when you are ready to capture for the order (for example when the order has been dispatched)
-//   if ($amazonClient->success) {
-//     $authorizationResponse                        = json_decode($response->toJson(), true);
-//     $requestParameters['amazon_authorization_id'] = $authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId'];
-//     $requestParameters['capture_amount']          = $invoiceDetails[1];
-//     $requestParameters['currency_code']        = 'USD';
-//     $requestParameters['capture_reference_id'] = md5($authorizationResponse['AuthorizeResult']['AuthorizationDetails']['AmazonAuthorizationId']);
-    
-//     $response                 = $amazonClient->capture($requestParameters);
-//     $responsearray['capture'] = json_decode($response->toJson());
-    
-//   }
-  
   // Echo the Json encoded array for the Ajax success 
   $GATEWAY = getGatewayVariables($gatewaymodule);
   
@@ -236,19 +223,20 @@ if (is_numeric($varPresent)) {
   $transid   = $gAmazonOrderReferenceId;
   $amount    = $responseCapture['AuthorizeResult']['AuthorizationDetails']['CapturedAmount']['Amount'];
   $fee       = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationFee']['Amount'];
+  $auth_status = $responseCapture['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State'];
   
   $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
   
   checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
   
-  if ($responseCapture["ResponseStatus"] == 200) {
+  if ($responseCapture["ResponseStatus"] == 200 && $amount == $invoiceDetails[1] && $auth_status === "Closed") {
     # Successful
     addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
-    logTransaction($GATEWAY["name"], $responseCapture, "Successful"); # Save to Gateway Log: name, data array, status
+    logTransaction($GATEWAY["name"], $responseCapture, "Success"); # Save to Gateway Log: name, data array, status
     echo "<script type='text/javascript'>window.location = '" . $invoiceDetails[4] . "';</script>";
   } else {
     # Unsuccessful
-    logTransaction($GATEWAY["name"], $responseCapture, "Unsuccessful"); # Save to Gateway Log: name, data array, status
+    logTransaction($GATEWAY["name"], $responseCapture, "Failed"); # Save to Gateway Log: name, data array, status
     echo "<p>There was an error processing your payment. Please try another payment method, or contact support.<br/>Sincerely, IPBurger.</p>";
     echo "<script type='text/javascript'>setTimeout(function() {window.location = '" . $invoiceDetails[4] . ";'}, 5000);</script>";
   }
