@@ -1,0 +1,5 @@
+# SRC:DEST
+
+./AmazonPay:$WHM_ROOT/modules/gateways/AmazonPay
+./amazonpay.php:$WHM_ROOT/modules/gateways/amazonpay.php
+./callback/amazonpay.php:$WHM_ROOT/modules/gateways/callback/amazonpay.php
