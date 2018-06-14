@@ -2,14 +2,14 @@
 session_start();
 # Required File Includes
 if (file_exists("../../../dbconnect.php")) {
-  include("../../../dbconnect.php");
+  require_once("../../../dbconnect.php");
 } else {
-  include("../../../init.php");
+  require_once("../../../init.php");
 }
 
-include("../../../includes/functions.php");
-include("../../../includes/gatewayfunctions.php");
-include("../../../includes/invoicefunctions.php");
+require_once("../../../includes/functions.php");
+require_once("../../../includes/gatewayfunctions.php");
+require_once("../../../includes/invoicefunctions.php");
 require_once('../AmazonPay/Client.php');
 
 $gatewaymodule = "amazonpay"; # Enter your gateway module name here replacing template
