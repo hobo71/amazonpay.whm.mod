@@ -17,7 +17,7 @@ if (is_numeric($varPresent)) {
     'region' => $gatewayVariables['region']
   );
   
-  $amazonClient = new Client($amazonConfig);
+  $amazonClient = new AmazonPay\Client($amazonConfig);
   
   if ($gatewayVariables['sandbox'] == 'on') {
     $amazonClient->setSandbox(true);
