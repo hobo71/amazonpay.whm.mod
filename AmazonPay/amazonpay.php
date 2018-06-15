@@ -1,5 +1,5 @@
 <?php
-require_once("AmazonPay/Client.php");
+require_once('AmazonPaySDK/Client.php');
 
 try {
   $gatewayVariables = getGatewayVariables('amazonpay');
@@ -17,7 +17,7 @@ if (is_numeric($varPresent)) {
     'region' => $gatewayVariables['region']
   );
   
-  $amazonClient = new AmazonPay\Client($amazonConfig);
+  $amazonClient = new Client($amazonConfig);
   
   if ($gatewayVariables['sandbox'] == 'on') {
     $amazonClient->setSandbox(true);

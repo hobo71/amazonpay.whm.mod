@@ -1,11 +1,11 @@
 # AmazonPay Module for WHMCS
 
-## File structure
-[whmcs-root]/modules/gateways/  
-                             |- AmazonPay  
-                             |- amazonpay.php  
-                             |- callback/amazonpay.php
- 
+## File structure and Insallation
+
+ - Copy/mount ./ -> [whmcs-root]/modules/gateways/AmazonPay
+ - Create a symlink AmazonPay/amazonpay.php -> [whmcs-root]/modules/gateways/amazonpay.php ->  [`cd [whmcs-root]/modules/gateways/; ln -s AmazonPay/amazonpay.php amazonpay.php`
+ - Callback is at AmazonPay/callback.php
+
 ## Setup
 
 - Enable Gateway `Amazon Pay` Under WHMCS

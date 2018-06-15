@@ -10,7 +10,7 @@ if (file_exists("../../../dbconnect.php")) {
 require_once("../../../includes/functions.php");
 require_once("../../../includes/gatewayfunctions.php");
 require_once("../../../includes/invoicefunctions.php");
-require_once('../AmazonPay/Client.php');
+require_once('AmazonPaySDK/Client.php');
 
 $gatewaymodule = "amazonpay"; # Enter your gateway module name here replacing template
 
